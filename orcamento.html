@@ -1,0 +1,2052 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<style id="orc-mobile-v1">
+  .cli-toggle{ display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; border:none; background:none; color:inherit; font:inherit; padding:0; text-align:left; cursor:default; }
+  .cli-toggle svg{ display:none; }
+  @media (max-width:899px){
+    .card .note, .field .hint{ display:none !important; }
+    .grid-2 .field .hint{ display:block !important; }
+    .card .field{ margin-bottom:12px; }
+    .summary-grid{ grid-template-columns:1fr 1fr !important; column-gap:16px; }
+    .stat.total{ grid-column:span 2 !important; }
+    .stat .v{ font-size:18px; }
+    .stat .k{ font-size:12.5px; }
+    .stat.total .v{ font-size:30px; }
+    .cli-toggle{ cursor:pointer; }
+    .cli-toggle svg{ display:block; flex:none; color:var(--ink-soft); transition:transform .2s ease; }
+    .card.cli-open .cli-toggle svg{ transform:rotate(180deg); }
+    .card:not(.cli-open) .cli-dado{ display:none !important; }
+    .bottom:has(#salvarBtn){ display:grid !important; grid-template-columns:1fr 1fr; gap:10px !important; }
+    .bottom:has(#salvarBtn) > button{ width:100%; justify-content:center; margin:0; }
+    .bottom:has(#salvarBtn) > #salvarBtn:nth-last-child(3), .bottom:has(#salvarBtn) #downloadClienteBtn, .bottom:has(#salvarBtn) #downloadBtn{ grid-column:span 2; }
+    .bottom:has(#salvarBtn) > [hidden]{ display:none !important; }
+  }
+</style>
+</head><body>
+<title>Calculadora Arcano</title>
+<style>
+  :root{
+    --ink:#111214;
+    --ink-soft:#4b4f56;
+    --page-bg:#ffffff;
+    --card:#e6e6e8;
+    --card-line:#cfd0d3;
+    --row-bg:#f4f4f5;
+    --green:#0f7a4f;
+    --green-soft:#e7f4ee;
+    --input-bg:#ffffff;
+    --input-line:#d5d6d9;
+    --danger:#b3271e;
+    --radius:28px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#f1f1f1;
+      --ink-soft:#a3a3a3;
+      --page-bg:#121212;
+      --card:#1e1e1e;
+      --card-line:#3a3a3a;
+      --row-bg:#262626;
+      --green:#3fd394;
+      --green-soft:#17281f;
+      --input-bg:#171717;
+      --input-line:#3a3a3a;
+      --danger:#ff7a70;
+    }
+    :root:not([data-theme="light"]) .logo{ filter:invert(1); }
+  }
+  :root[data-theme="dark"]{
+    --ink:#f1f1f1;
+    --ink-soft:#a3a3a3;
+    --page-bg:#121212;
+    --card:#1e1e1e;
+    --card-line:#3a3a3a;
+    --row-bg:#262626;
+    --green:#3fd394;
+    --green-soft:#17281f;
+    --input-bg:#171717;
+    --input-line:#3a3a3a;
+    --danger:#ff7a70;
+  }
+  :root[data-theme="dark"] .logo{ filter:invert(1); }
+  *{box-sizing:border-box;}
+  html,body{min-height:100%;}
+  body{
+    margin:0;
+    padding:24px 16px;
+    padding-block:32px;
+    background:var(--page-bg);
+    font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+  }
+  .stage{
+    width:100%;
+    max-width:900px;
+  }
+  .brand{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:20px;
+    margin-bottom:18px;
+    flex-wrap:wrap;
+  }
+  .logo{
+    height:36px;
+    width:auto;
+    display:block;
+  }
+  .tagline{
+    font-weight:700;
+    font-size:12.5px;
+    line-height:1.35;
+    color:var(--ink-soft);
+    text-align:right;
+  }
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    padding:26px 26px 30px;
+  }
+  .card h1{
+    font-size:21px;
+    margin:0 0 18px;
+    font-weight:800;
+    letter-spacing:-0.4px;
+  }
+  .divider{
+    height:1px;
+    background:var(--card-line);
+    border:none;
+    margin:22px 0;
+  }
+  .section-label{
+    font-size:10.5px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--ink-soft);
+    margin:0 0 12px;
+  }
+  .grid-2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  .field{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+  }
+  .field label{
+    font-size:12px;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .field .hint{
+    display:block;
+    font-weight:400;
+    font-size:10px;
+    color:var(--ink-soft);
+    margin-top:1px;
+  }
+  input[type="number"],input[type="text"]{
+    width:100%;
+    padding:8px 10px;
+    border-radius:8px;
+    border:1px solid var(--input-line);
+    background:var(--input-bg);
+    font-size:13.5px;
+    font-weight:700;
+    color:var(--ink);
+    font-family:inherit;
+    font-variant-numeric:tabular-nums;
+  }
+  input.money{ text-align:right; }
+  input:focus{
+    outline:2px solid var(--ink);
+    outline-offset:1px;
+  }
+  .var-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:12px;
+  }
+  .var-header .section-label{ margin:0; }
+  .btn-add{
+    border:none;
+    background:var(--ink);
+    color:var(--page-bg);
+    font-weight:700;
+    font-size:12px;
+    padding:8px 14px;
+    border-radius:20px;
+    cursor:pointer;
+    font-family:inherit;
+    white-space:nowrap;
+  }
+  .btn-add:hover{ opacity:0.85; }
+  #variacoes{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .var-row{
+    background:var(--row-bg);
+    border-radius:16px;
+    padding:14px 16px 16px;
+  }
+  .var-row-top{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:12px;
+  }
+  .var-row-top input[type="text"]{
+    flex:1;
+    font-size:13.5px;
+    font-weight:800;
+  }
+  .btn-remove{
+    flex:none;
+    width:28px;
+    height:28px;
+    border-radius:8px;
+    border:1px solid var(--input-line);
+    background:var(--input-bg);
+    color:var(--danger);
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    line-height:1;
+  }
+  .btn-remove:hover{ background:var(--card-line); }
+  .var-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+  }
+  .var-grid .field label{ font-size:10.5px; color:var(--ink-soft); font-weight:700; }
+  .var-sub{
+    margin-top:10px;
+    display:flex;
+    justify-content:flex-end;
+    gap:16px;
+    font-size:11.5px;
+    font-weight:700;
+    color:var(--ink-soft);
+  }
+  .var-sub b{ color:var(--green); font-weight:800; }
+  .summary-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  .stat{
+    background:var(--row-bg);
+    border-radius:14px;
+    padding:12px 14px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  .stat .k{ font-size:11px; font-weight:700; color:var(--ink-soft); }
+  .stat .v{ font-size:16px; font-weight:800; color:var(--ink); font-variant-numeric:tabular-nums; }
+  .stat.highlight .v{ color:var(--green); }
+  .stat.total{ background:var(--green-soft); grid-column:span 2; }
+  .stat.total .v{ color:var(--green); font-size:19px; }
+  .bottom{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:16px;
+  }
+  .note{
+    font-size:11px;
+    color:var(--ink-soft);
+    line-height:1.4;
+  }
+  .footer{
+    font-size:12px;
+    font-weight:700;
+    color:var(--ink);
+    display:flex;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+  .footer div{
+    display:flex;
+    align-items:center;
+    gap:7px;
+  }
+  .footer .ico{
+    width:20px;
+    height:20px;
+    border-radius:6px;
+    background:var(--ink);
+    color:var(--page-bg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:10.5px;
+    flex:none;
+  }
+  @media (max-width:520px){
+    .var-grid{ grid-template-columns:1fr 1fr; }
+    .summary-grid{ grid-template-columns:1fr; }
+    .stat.total{ grid-column:span 1; }
+  }
+  .btn-download{
+    border:none;
+    background:var(--green);
+    color:#ffffff;
+    font-weight:700;
+    font-size:12.5px;
+    padding:10px 18px;
+    border-radius:20px;
+    cursor:pointer;
+    font-family:inherit;
+    white-space:nowrap;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  .btn-download:hover{ opacity:0.88; }
+  .btn-download:disabled{ opacity:0.6; cursor:default; }
+  /* Botões em tons de cinza (não mais verde) pra ecoar a diferença entre os
+     dois orçamentos: interno mais escuro, cliente mais claro. */
+  #downloadBtn{ background:#45464a; color:#ffffff; }
+  #downloadClienteBtn{ background:#d6d7da; color:#111214; }
+  /* Botão "Salvar" (histórico) — verde, pra se destacar dos dois cinzas de download */
+  #salvarBtn{ background:var(--green); color:#ffffff; }
+
+  /* ---- Histórico de orçamentos (v18) ---- */
+  .card-head-row{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px 14px;
+    margin-bottom:18px;
+  }
+  .card-head-row h1{ margin:0; }
+  .btn-historico{
+    border:1.5px solid var(--ink-soft);
+    background:transparent;
+    color:var(--ink-soft);
+    font-weight:700;
+    font-size:12px;
+    padding:7px 14px;
+    border-radius:16px;
+    cursor:pointer;
+    font-family:inherit;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    white-space:nowrap;
+  }
+  .btn-historico svg{ flex:none; }
+  .btn-historico:hover{ color:var(--ink); border-color:var(--ink); }
+  .btn-download svg, .historico-icon-btn svg{ flex:none; }
+  .historico-box{ max-width:min(92vw,640px); }
+  .historico-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    max-height:60vh;
+    overflow-y:auto;
+  }
+  .historico-empty, .historico-loading{
+    font-size:13px;
+    color:var(--ink-soft);
+    padding:18px 4px;
+    text-align:center;
+    line-height:1.5;
+  }
+  .historico-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    background:var(--card);
+    border-radius:16px;
+    padding:12px 14px;
+  }
+  .historico-info{ min-width:0; }
+  .historico-nome{ font-size:14.5px; font-weight:800; color:var(--ink); overflow-wrap:anywhere; }
+  .historico-data{ font-size:12px; color:var(--ink-soft); margin-top:2px; }
+  .historico-actions{ display:flex; align-items:center; gap:6px; flex:none; }
+  .historico-icon-btn{
+    border:none;
+    background:var(--card-line);
+    color:var(--ink);
+    min-width:36px;
+    height:36px;
+    padding:0 10px;
+    border-radius:12px;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:15px;
+    white-space:nowrap;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex:none;
+  }
+  .historico-icon-btn:hover{ opacity:0.82; }
+  .historico-icon-btn:disabled{ opacity:0.55; cursor:default; }
+  .historico-icon-btn.cliente{ background:#d6d7da; color:#111214; }
+  .historico-icon-btn.interno{ background:#45464a; color:#ffffff; }
+  .historico-icon-btn.excluir{ background:transparent; color:var(--ink-soft); font-size:16px; }
+  .historico-icon-btn.excluir:hover{ color:#c0392b; opacity:1; }
+  /* Estado "armado" (primeiro toque) do botão de excluir — substitui o
+     confirm() nativo, que fica sem efeito dentro do iframe do artefato. */
+  .historico-icon-btn.excluir.confirmando{ background:#c0392b; color:#ffffff; opacity:1; }
+
+  /* ---- Export card (rasterizado em 9:16 pra download, cores fixas) ----
+     Versão "completa": inclui todos os custos e margens, igual à planilha —
+     não é o cartão que vai pro cliente, é o resumo interno pro sócio. */
+  #exportCard{
+    position:fixed;
+    left:-99999px;
+    top:0;
+    width:1080px;
+    height:1920px;
+    background:#ffffff;
+    padding:60px 56px;
+    box-sizing:border-box;
+    font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+    color:#111214;
+    display:flex;
+    flex-direction:column;
+  }
+  #exportCard .ex-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:20px;
+  }
+  #exportCard .ex-logo{ height:42px; width:auto; display:block; }
+  #exportCard .ex-tagline{
+    font-weight:700;
+    font-size:12.5px;
+    line-height:1.4;
+    color:#4b4f56;
+    text-align:right;
+  }
+  #exportCard .ex-title-row{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    margin-top:32px;
+  }
+  #exportCard .ex-title{
+    font-size:30px;
+    font-weight:800;
+    letter-spacing:-0.5px;
+    margin:0;
+    flex:1;
+    min-width:0;
+    overflow-wrap:anywhere;
+  }
+  #exportCard .ex-date{ font-size:14px; font-weight:700; color:#4b4f56; white-space:nowrap; flex:none; padding-top:6px; }
+  /* Grupos em formato "rótulo: valor" (linhas soltas, sem grades apertadas) —
+     pra distribuir as informações por toda a altura do cartão, e não concentrar
+     tudo num bloco só. */
+  #exportCard .ex-group{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  #exportCard .kv{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap:6px;
+    margin:0;
+    font-size:18px;
+    line-height:1.4;
+    color:#111214;
+  }
+  #exportCard .kv .lbl{ font-weight:800; }
+  #exportCard .kv .val{ font-weight:600; }
+  #exportCard .kv .val.money{ color:#0f7a4f; font-weight:800; }
+  #exportCard .kv.total .lbl{ font-size:23px; }
+  #exportCard .kv.total .val{ font-size:27px; }
+  /* Dados do orçamento pro cliente, repetidos no cartão interno — mais compacto
+     que os demais .kv, já que o cartão interno é denso e essas linhas podem ter
+     texto longo (descrição, forma de pagamento). Em duas colunas (v20.1):
+     Cliente/Contato/Forma de pagamento à esquerda, Descrição/Prazo/Validade
+     à direita, a pedido do usuário. */
+  #exportCard .ex-cliente-info{ gap:10px; }
+  #exportCard .ex-cliente-info-grid{ display:grid; grid-template-columns:1fr 1fr; gap:7px 28px; }
+  #exportCard .ex-cliente-info-col{ display:flex; flex-direction:column; gap:7px; min-width:0; }
+  #exportCard .ex-cliente-info .kv{ font-size:13px; line-height:1.35; gap:5px; }
+  #exportCard .ex-cliente-info .kv .val{ white-space:pre-wrap; }
+  #exportCard.ex-density-2 .ex-cliente-info{ gap:8px; }
+  #exportCard.ex-density-2 .ex-cliente-info-grid{ gap:5px 24px; }
+  #exportCard.ex-density-2 .ex-cliente-info-col{ gap:5px; }
+  #exportCard.ex-density-2 .ex-cliente-info .kv{ font-size:12px; }
+  #exportCard.ex-density-3 .ex-cliente-info{ gap:6px; }
+  #exportCard.ex-density-3 .ex-cliente-info-grid{ gap:4px 20px; }
+  #exportCard.ex-density-3 .ex-cliente-info-col{ gap:4px; }
+  #exportCard.ex-density-3 .ex-cliente-info .kv{ font-size:11px; line-height:1.3; }
+  #exportCard .ex-card{
+    margin-top:20px;
+    background:#eef0f1;
+    border-radius:28px;
+    padding:40px 36px;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    gap:22px;
+    min-height:0;
+  }
+  #exportCard .ex-section-label{
+    font-size:11px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:#4b4f56;
+    margin:0 0 12px;
+  }
+  #exportCard .ex-rows{ display:flex; flex-direction:column; gap:12px; }
+  #exportCard .ex-row{
+    background:#e3e5e7;
+    border-radius:14px;
+    padding:14px 18px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  #exportCard .ex-row .ex-row-top{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:14px;
+  }
+  #exportCard .ex-row .ex-nome{ font-size:18.5px; font-weight:800; }
+  #exportCard .ex-row .ex-lucro{ font-size:15.5px; font-weight:800; color:#0f7a4f; text-align:right; white-space:nowrap; }
+  #exportCard .ex-row .ex-lucro .lbl{ font-weight:700; color:#4b4f56; text-transform:uppercase; font-size:10.5px; letter-spacing:0.04em; display:block; }
+  #exportCard .ex-row-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px 12px;
+  }
+  #exportCard .ex-row-grid .cell{ display:flex; flex-direction:column; gap:1px; }
+  #exportCard .ex-row-grid .cell .k{ font-size:10.5px; font-weight:700; color:#4b4f56; text-transform:uppercase; letter-spacing:0.03em; }
+  #exportCard .ex-row-grid .cell .v{ font-size:15px; font-weight:800; color:#111214; }
+  #exportCard .ex-row-grid .cell.hl .v{ color:#0f7a4f; }
+  /* Custos gerais (Etiqueta/Outros) como chips lado a lado — v16 */
+  #exportCard .ex-chips{ display:flex; gap:14px; }
+  #exportCard .ex-chip{
+    flex:1;
+    background:#e3e5e7;
+    border-radius:16px;
+    padding:16px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  #exportCard .ex-chip .k{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:#4b4f56; }
+  #exportCard .ex-chip .v{ font-size:21px; font-weight:800; color:#0f7a4f; }
+  /* Resumo do pedido como grade de caixas (quadros grandes) — v16 */
+  #exportCard .ex-stats{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  #exportCard .ex-stat{
+    background:#e3e5e7;
+    border-radius:20px;
+    padding:22px 24px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  #exportCard .ex-stat .k{ font-size:14px; font-weight:800; text-transform:uppercase; letter-spacing:0.04em; color:#4b4f56; }
+  #exportCard .ex-stat .v{ font-size:32px; font-weight:800; color:#111214; }
+  #exportCard .ex-stat.hl .v{ color:#0f7a4f; }
+  /* Total do pedido em caixa verde de destaque, fora da grade — v16 */
+  #exportCard .ex-total-box{
+    background:#e7f4ee;
+    border-radius:22px;
+    padding:26px 30px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+  }
+  #exportCard .ex-total-box .lbl{ font-size:22px; font-weight:800; color:#0f7a4f; }
+  #exportCard .ex-total-box .val{ font-size:44px; font-weight:800; color:#0f7a4f; }
+  #exportCard .ex-divider{ height:1px; background:#c9cbce; border:none; margin:0; }
+  #exportCard .ex-foot{
+    margin-top:20px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  #exportCard .ex-note{ font-size:12px; color:#4b4f56; line-height:1.4; }
+  /* Contato do rodapé do cartão INTERNO lado a lado (v20.1, a pedido do
+     usuário) — diferente do cartão do cliente (.exc-contact), que continua
+     empilhado. */
+  #exportCard .ex-contact{
+    font-size:14px;
+    font-weight:700;
+    color:#111214;
+    display:flex;
+    flex-direction:row;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:flex-start;
+    gap:10px 22px;
+  }
+  #exportCard .ex-contact div{ display:flex; align-items:center; gap:8px; }
+  #exportCard .ex-contact .ico{
+    width:22px; height:22px; border-radius:6px;
+    background:#111214; color:#ffffff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:11px; flex:none;
+  }
+  /* Densidade: encolhe as linhas de variação quando há muitas, pra caber no 1080x1920 fixo */
+  #exportCard.ex-density-2 .ex-row{ padding:11px 16px; gap:8px; }
+  #exportCard.ex-density-2 .ex-row .ex-nome{ font-size:17px; }
+  #exportCard.ex-density-2 .ex-row-grid .cell .v{ font-size:14px; }
+  #exportCard.ex-density-2 .ex-rows{ gap:9px; }
+  #exportCard.ex-density-3 .ex-row{ padding:9px 14px; gap:6px; }
+  #exportCard.ex-density-3 .ex-row .ex-nome{ font-size:15.5px; }
+  #exportCard.ex-density-3 .ex-row-grid{ gap:5px 10px; }
+  #exportCard.ex-density-3 .ex-row-grid .cell .k{ font-size:9.5px; }
+  #exportCard.ex-density-3 .ex-row-grid .cell .v{ font-size:13px; }
+  #exportCard.ex-density-3 .ex-rows{ gap:7px; }
+  /* Densidade também encolhe chips/quadros do resumo quando há muitas variações — v16 */
+  #exportCard.ex-density-2 .ex-chip{ padding:13px 16px; }
+  #exportCard.ex-density-2 .ex-chip .v{ font-size:18px; }
+  #exportCard.ex-density-2 .ex-stats{ gap:12px; }
+  #exportCard.ex-density-2 .ex-stat{ padding:16px 18px; gap:5px; }
+  #exportCard.ex-density-2 .ex-stat .k{ font-size:12.5px; }
+  #exportCard.ex-density-2 .ex-stat .v{ font-size:26px; }
+  #exportCard.ex-density-2 .ex-total-box{ padding:20px 24px; }
+  #exportCard.ex-density-2 .ex-total-box .lbl{ font-size:19px; }
+  #exportCard.ex-density-2 .ex-total-box .val{ font-size:36px; }
+  #exportCard.ex-density-3 .ex-chip{ padding:10px 14px; }
+  #exportCard.ex-density-3 .ex-chip .v{ font-size:15px; }
+  #exportCard.ex-density-3 .ex-stats{ gap:9px; }
+  #exportCard.ex-density-3 .ex-stat{ padding:12px 14px; gap:4px; }
+  #exportCard.ex-density-3 .ex-stat .k{ font-size:11px; }
+  #exportCard.ex-density-3 .ex-stat .v{ font-size:21px; }
+  #exportCard.ex-density-3 .ex-total-box{ padding:16px 20px; }
+  #exportCard.ex-density-3 .ex-total-box .lbl{ font-size:15px; }
+  #exportCard.ex-density-3 .ex-total-box .val{ font-size:28px; }
+
+  /* ---- Export card CLIENTE (rasterizado em 9:16, fontes um pouco maiores,
+     sem nenhum custo/margem — só o que o cliente final precisa ver) ---- */
+  #exportCardCliente{
+    position:fixed;
+    left:-99999px;
+    top:0;
+    width:1080px;
+    height:1920px;
+    background:#ffffff;
+    padding:60px 56px;
+    box-sizing:border-box;
+    font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+    color:#111214;
+    display:flex;
+    flex-direction:column;
+  }
+  #exportCardCliente .exc-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:20px;
+  }
+  #exportCardCliente .exc-logo{ height:46px; width:auto; display:block; }
+  #exportCardCliente .exc-tagline{
+    font-weight:700;
+    font-size:15px;
+    line-height:1.4;
+    color:#4b4f56;
+    text-align:right;
+  }
+  #exportCardCliente .exc-title-row{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    margin-top:34px;
+  }
+  #exportCardCliente .exc-title{
+    font-size:37px;
+    font-weight:800;
+    letter-spacing:-0.5px;
+    margin:0;
+    flex:1;
+    min-width:0;
+    overflow-wrap:anywhere;
+  }
+  #exportCardCliente .exc-date{ font-size:17px; font-weight:700; color:#4b4f56; white-space:nowrap; flex:none; padding-top:8px; }
+  /* Responsável/Contato: dois blocos lado a lado ACIMA do card cinza — layout
+     restaurado a pedido do usuário (era assim antes da v12). */
+  #exportCardCliente .exc-meta{
+    margin-top:22px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  #exportCardCliente .exc-meta .chip{
+    background:#f4f4f5;
+    border-radius:16px;
+    padding:16px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  #exportCardCliente .exc-meta .chip .k{ font-size:13px; font-weight:700; color:#4b4f56; text-transform:uppercase; letter-spacing:0.04em; }
+  #exportCardCliente .exc-meta .chip .v{ font-size:21px; font-weight:800; color:#111214; }
+  /* Grupos em formato "rótulo: valor" (linhas soltas) pro resto do card. */
+  #exportCardCliente .exc-group{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  #exportCardCliente .exc-section-label{
+    font-size:13.5px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:#4b4f56;
+    margin:0 0 4px;
+  }
+  #exportCardCliente .kv{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap:7px;
+    margin:0;
+    font-size:22px;
+    line-height:1.5;
+    color:#111214;
+  }
+  #exportCardCliente .kv .lbl{ font-weight:800; }
+  #exportCardCliente .kv .val{ font-weight:600; white-space:pre-wrap; }
+  #exportCardCliente .kv .val.money{ color:#0f7a4f; font-weight:800; }
+  /* Termos (forma de pagamento / prazo / validade) — mantidos como no v12, só
+     com um estilo levemente diferente (itálico, tom mais suave) e uma linha
+     bem clarinha separando cada um, a pedido do usuário. */
+  #exportCardCliente .exc-terms-group{ gap:18px; }
+  #exportCardCliente .kv.term{ font-style:italic; }
+  #exportCardCliente .kv.term .lbl{ font-weight:700; color:#4b4f56; }
+  #exportCardCliente .kv.term .val{ color:#333538; }
+  #exportCardCliente .exc-divider-soft{ height:1px; background:#e7e7e8; border:none; margin:0; }
+  #exportCardCliente .exc-card{
+    margin-top:24px;
+    background:#eeeeef;
+    border-radius:28px;
+    padding:44px 40px;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    min-height:0;
+  }
+  /* Descrição + Itens do pedido ficam juntos, próximos um do outro (gap curto);
+     Total + Termos também ficam juntos e próximos entre si — o espaço "sobrando"
+     do cartão vira UM respiro só, entre esses dois blocos (não vários espalhados),
+     a pedido do usuário. */
+  #exportCardCliente .exc-top-block{ display:flex; flex-direction:column; gap:18px; }
+  #exportCardCliente .exc-bottom-block{ display:flex; flex-direction:column; gap:16px; }
+  #exportCardCliente .exc-descricao{
+    font-size:22px;
+    font-weight:600;
+    color:#111214;
+    line-height:1.5;
+    margin:0;
+    white-space:pre-wrap; /* preserva quebras de linha/parágrafo digitadas no textarea */
+  }
+  #exportCardCliente .exc-divider{ height:1px; background:#d7d7d9; border:none; margin:0; }
+  /* Itens do pedido — bloco por variação: nome + subtotal em destaque na linha
+     de cima, "qtd un. × preço" como detalhe. Fontes aumentadas de novo. */
+  #exportCardCliente .exc-rows{ display:flex; flex-direction:column; gap:14px; }
+  #exportCardCliente .exc-row{
+    background:#f7f7f8;
+    border-radius:16px;
+    padding:18px 22px;
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+  }
+  #exportCardCliente .exc-row-top{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:14px;
+  }
+  #exportCardCliente .exc-nome{ font-size:25px; font-weight:800; }
+  #exportCardCliente .exc-subtotal{ font-size:27px; font-weight:800; color:#0f7a4f; text-align:right; white-space:nowrap; }
+  #exportCardCliente .exc-detail{ font-size:19px; font-weight:700; color:#4b4f56; }
+  /* Quantidade total + Total do pedido — bloco verde reunido, logo antes da
+     forma de pagamento. Fontes bem maiores desta vez, a pedido do usuário. */
+  #exportCardCliente .exc-total-row{
+    margin-top:4px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    background:#e7f4ee;
+    border-radius:20px;
+    padding:26px 30px;
+  }
+  #exportCardCliente .exc-total-row .exc-qty{ display:flex; flex-direction:column; gap:4px; }
+  #exportCardCliente .exc-total-row .exc-qty .k{ font-size:17px; font-weight:700; color:#4b4f56; }
+  #exportCardCliente .exc-total-row .exc-qty .v{ font-size:32px; font-weight:800; color:#111214; }
+  #exportCardCliente .exc-total-row .exc-main{ display:flex; flex-direction:column; gap:4px; text-align:right; }
+  #exportCardCliente .exc-total-row .exc-main .k{ font-size:16px; font-weight:800; color:#111214; }
+  #exportCardCliente .exc-total-row .exc-main .v{ font-size:45px; font-weight:800; color:#0f7a4f; }
+  #exportCardCliente .exc-foot{
+    margin-top:22px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  #exportCardCliente .exc-contact{
+    font-size:17px;
+    font-weight:700;
+    color:#111214;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:13px;
+  }
+  #exportCardCliente .exc-contact div{ display:flex; align-items:center; gap:8px; }
+  #exportCardCliente .exc-contact .ico{
+    width:25px; height:25px; border-radius:6px;
+    background:#111214; color:#ffffff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; flex:none;
+  }
+  /* Densidade: encolhe os blocos de item quando há muitas variações */
+  #exportCardCliente.exc-density-2 .exc-row{ padding:15px 19px; gap:7px; }
+  #exportCardCliente.exc-density-2 .exc-nome{ font-size:22px; }
+  #exportCardCliente.exc-density-2 .exc-subtotal{ font-size:24px; }
+  #exportCardCliente.exc-density-2 .exc-detail{ font-size:17px; }
+  #exportCardCliente.exc-density-2 .exc-rows{ gap:12px; }
+  #exportCardCliente.exc-density-3 .exc-row{ padding:13px 17px; gap:6px; }
+  #exportCardCliente.exc-density-3 .exc-nome{ font-size:19px; }
+  #exportCardCliente.exc-density-3 .exc-subtotal{ font-size:21px; }
+  #exportCardCliente.exc-density-3 .exc-detail{ font-size:16px; }
+  #exportCardCliente.exc-density-3 .exc-rows{ gap:10px; }
+
+  textarea{
+    width:100%;
+    padding:8px 10px;
+    border-radius:8px;
+    border:1px solid var(--input-line);
+    background:var(--input-bg);
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--ink);
+    font-family:inherit;
+    resize:vertical;
+    min-height:56px;
+    line-height:1.4;
+  }
+  textarea:focus{ outline:2px solid var(--ink); outline-offset:1px; }
+  .btn-secondary{
+    border:1px solid var(--input-line);
+    background:var(--input-bg);
+    color:var(--ink);
+    font-weight:700;
+    font-size:12.5px;
+    padding:10px 18px;
+    border-radius:20px;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .btn-secondary:hover{ background:var(--card-line); }
+  .form-modal-box{
+    background:var(--page-bg);
+    border-radius:24px;
+    padding:22px;
+    max-width:min(92vw,560px);
+    max-height:90vh;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .form-modal-box h2{ margin:0; font-size:18px; font-weight:800; }
+  .form-modal-box .modal-note{ font-size:11.5px; color:var(--ink-soft); line-height:1.4; margin:0; }
+  .form-modal-box .modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:4px;
+  }
+
+  .dl-modal{
+    position:fixed; inset:0; z-index:9999;
+    background:rgba(0,0,0,0.6);
+    display:flex; align-items:center; justify-content:center;
+    padding:24px;
+  }
+  .dl-modal[hidden]{ display:none; }
+  .dl-modal-box{
+    background:var(--page-bg);
+    border-radius:20px;
+    padding:20px;
+    max-width:min(92vw,640px);
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .dl-modal-box img{ width:100%; height:auto; border-radius:12px; display:block; }
+  .dl-modal-box p{ margin:0; font-size:13px; color:var(--ink-soft); line-height:1.45; }
+  .dl-modal-close{
+    align-self:flex-end;
+    border:none;
+    background:var(--ink);
+    color:var(--page-bg);
+    font-weight:700;
+    font-size:12.5px;
+    padding:8px 16px;
+    border-radius:16px;
+    cursor:pointer;
+    font-family:inherit;
+  }
+
+  /* Aviso flutuante (toast) — substitui alert()/confirm() nativos, que ficam
+     sem efeito dentro do iframe isolado onde o artefato publicado roda. */
+  #toast{
+    position:fixed;
+    left:50%;
+    bottom:28px;
+    transform:translateX(-50%) translateY(16px);
+    background:#111214;
+    color:#ffffff;
+    font-size:13px;
+    font-weight:700;
+    padding:12px 20px;
+    border-radius:14px;
+    max-width:min(90vw,420px);
+    text-align:center;
+    line-height:1.4;
+    box-shadow:0 10px 28px rgba(0,0,0,0.28);
+    z-index:10000;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.2s ease, transform 0.2s ease;
+  }
+  #toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+  #toast.error{ background:#c0392b; }
+</style>
+
+<style>
+  /* ===== Visual do sistema Financeiro Arcano (out/2026) — só a tela da calculadora ===== */
+  @font-face{ font-family:"Archivo"; font-style:normal; font-display:swap; font-weight:100 900; font-stretch:62% 125%; src:url(archivo.woff2) format("woff2-variations"), url(archivo.woff2) format("woff2"); }
+  :root{
+    --ink:#000000; --ink-soft:#5E5E59; --page-bg:#F2F2EF; --card:#FFFFFF; --card-line:#E2E2DD; --row-bg:#F2F2EF;
+    --green:#0E7A4E; --green-soft:#E2F1E9; --input-bg:#FFFFFF; --input-line:#CFCFC8; --danger:#B3261E; --radius:18px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#F4F4F1; --ink-soft:#A2A29C; --page-bg:#111111; --card:#1B1B1A; --card-line:#2D2D2B; --row-bg:#111111;
+      --green:#4BCB8C; --green-soft:#15291F; --input-bg:#151514; --input-line:#3A3A37; --danger:#FF8174;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#F4F4F1; --ink-soft:#A2A29C; --page-bg:#111111; --card:#1B1B1A; --card-line:#2D2D2B; --row-bg:#111111;
+    --green:#4BCB8C; --green-soft:#15291F; --input-bg:#151514; --input-line:#3A3A37; --danger:#FF8174;
+  }
+  body{ font-family:"Archivo", "Helvetica Neue", Arial, sans-serif !important; font-variant-numeric:tabular-nums; -webkit-font-smoothing:antialiased; }
+  .embedded body{ padding:36px 44px 56px; justify-content:flex-start; }
+  .embedded .stage{ max-width:1100px; }
+  .embedded .brand, .embedded .bottom:has(.footer){ display:none; }
+  .card h1{ font-size:30px; font-stretch:125%; font-weight:800; letter-spacing:-0.01em; }
+  .card{ padding:26px 28px 30px; }
+  .section-label{ text-transform:none; letter-spacing:0; font-size:15px; font-weight:700; color:var(--ink); }
+  .field label{ font-size:13.5px; font-weight:600; }
+  .field .hint{ font-size:12.5px; }
+  input[type="number"], input[type="text"], input[type="date"], textarea{ font-size:15px; font-weight:500; padding:10px 12px; border-radius:10px; }
+  .var-row{ background:transparent; border-top:1px solid var(--card-line); border-radius:0; padding:16px 0; }
+  .var-grid .field label{ font-size:13px; font-weight:500; }
+  .var-sub{ font-size:13px; font-weight:500; }
+  .stat{ background:transparent; border-top:1px solid var(--card-line); border-radius:0; padding:12px 0; }
+  .stat .k{ font-size:13px; font-weight:500; }
+  .stat .v{ font-size:20px; font-stretch:110%; }
+  .stat.total{ background:transparent; border-top:2px solid var(--ink); }
+  .stat.total .v{ font-size:34px; font-stretch:125%; }
+  .btn-add, .btn-download, .btn-historico, .btn-secondary{ font-size:14px; font-weight:700; padding:10px 18px; border-radius:999px; }
+  .btn-add{ background:transparent; color:var(--ink); border:1px solid var(--input-line); }
+  .btn-historico{ border:1px solid var(--input-line); color:var(--ink); }
+  #salvarBtn{ background:var(--ink); color:var(--page-bg); }
+  #criarPedidoBtn{ background:transparent; color:var(--ink); border:1px solid var(--ink); }
+  #downloadBtn, #downloadClienteBtn{ background:transparent; color:var(--ink); border:1px solid var(--input-line); }
+  .btn-remove{ border-radius:50%; }
+  .edit-banner{ display:flex; align-items:center; justify-content:space-between; gap:8px 16px; flex-wrap:wrap; background:var(--row-bg); border-radius:12px; padding:12px 14px; margin:-4px 0 18px; }
+  .edit-banner p{ margin:0; font-size:14px; }
+  .edit-actions{ display:flex; gap:16px; flex-wrap:wrap; }
+  .link-btn{ border:none; background:none; color:var(--ink-soft); font:inherit; font-size:13.5px; font-weight:600; text-decoration:underline; text-underline-offset:3px; cursor:pointer; padding:2px 0; }
+  .link-btn:hover{ color:var(--ink); }
+  .historico-item{ background:transparent; border-top:1px solid var(--card-line); border-radius:0; padding:12px 0; }
+  .historico-item:first-child{ border-top:none; }
+  .historico-item.atual .historico-nome::after{ content:"aberto agora"; font-size:12px; font-weight:600; color:var(--ink-soft); margin-left:8px; }
+  .historico-abrir{ flex:1; border:none; background:none; color:inherit; font:inherit; text-align:left; cursor:pointer; padding:4px 0; }
+  .historico-abrir:hover .historico-nome{ text-decoration:underline; text-underline-offset:3px; }
+  .form-modal-box h2{ font-size:22px; font-stretch:115%; }
+  .dl-modal{ background:rgba(0,0,0,.5); }
+  #toast{ background:#000; border-radius:12px; font-weight:600; }
+  @media (max-width:899px){
+    .embedded body{ padding:18px 16px 32px; }
+    .card{ padding:18px 16px 22px; }
+    .card h1{ font-size:24px; }
+  }
+
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+// Ponte do sistema Financeiro Arcano: histórico no Supabase (tabela orcamentos)
+// e download direto (ou compartilhar, no celular) no lugar das capabilities do artefato.
+(function(){
+  try{ var t = window.parent && window.parent !== window && window.parent.document.documentElement.getAttribute('data-theme'); if(t) document.documentElement.setAttribute('data-theme', t); }catch(e){}
+  if(window.parent !== window) document.documentElement.classList.add('embedded');
+  var sb = window.supabase.createClient('https://lbypknjesytlgibqovdx.supabase.co','sb_publishable_PWcq_RuQiUXGrE4ASQoO6Q_SFo2NHTS');
+  function coll(){
+    var q = { order:null, lim:50 };
+    var api = {
+      orderBy: function(){ return api; },
+      limit: function(n){ q.lim = n; return api; },
+      get: async function(){
+        var r = await sb.from('orcamentos').select('id,data,saved_at').order('saved_at',{ascending:false}).limit(q.lim);
+        if(r.error) throw r.error;
+        return { docs: r.data.map(function(row){ return { id: row.id, data: function(){ return row.data; } }; }) };
+      },
+      add: async function(rec){
+        var r = await sb.from('orcamentos').insert({ data: rec, saved_at: rec.savedAt || Date.now() }).select('id').single();
+        if(r.error) throw r.error;
+        return { id: r.data.id };
+      },
+      doc: function(id){ return {
+        delete: async function(){ var r = await sb.from('orcamentos').delete().eq('id', id); if(r.error) throw r.error; },
+        set: async function(rec){ var r = await sb.from('orcamentos').update({ data: rec, saved_at: rec.savedAt || Date.now() }).eq('id', id); if(r.error) throw r.error; }
+      }; }
+    };
+    return api;
+  }
+  var dbShim = { collection: function(){ return coll(); } };
+  var dl = { save: async function(o){
+    var file = new File([o.data], o.filename, { type:'image/png' });
+    var mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if(mobile && navigator.canShare && navigator.canShare({ files:[file] })){
+      try{ await navigator.share({ files:[file] }); return; }
+      catch(e){ if(e && e.name === 'AbortError'){ var d = new Error('declined'); d.code = 'declined'; throw d; } }
+    }
+    var url = URL.createObjectURL(o.data); var a = document.createElement('a');
+    a.href = url; a.download = o.filename; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+  } };
+  window.claude = { use: async function(name){
+    if(name === 'downloads') return dl;
+    if(name === 'db'){ var s = await sb.auth.getSession(); return (s && s.data && s.data.session) ? dbShim : null; }
+    return null;
+  } };
+})();
+</script>
+
+<div class="stage">
+
+  <div class="brand">
+    <img class="logo" alt="Arcano" src="data:image/png;base64,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">
+    <div class="tagline">Estilo transcendente.<br>A linguagem do Sagrado.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head-row">
+      <h1>Calculadora de orçamento</h1>
+      <button type="button" class="btn-historico" id="historicoBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 2.64-6.36L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg><span>Histórico de orçamentos</span></button>
+    </div>
+
+    <div class="edit-banner" id="editBanner" hidden>
+      <p>Editando <b id="editNome"></b>. Salvar atualiza este orçamento no histórico.</p>
+      <div class="edit-actions">
+        <button type="button" class="link-btn" id="salvarNovoBtn">Salvar como novo</button>
+        <button type="button" class="link-btn" id="novoOrcBtn">Começar outro orçamento</button>
+      </div>
+    </div>
+
+    <div class="field" style="margin-bottom:20px;">
+      <label>Nome do projeto<span class="hint">aparece no título do orçamento (interno e do cliente) — opcional</span></label>
+      <input type="text" id="projeto" placeholder="Ex.: Turma 2026, Camisas Retiro...">
+    </div>
+
+    <p class="section-label">Custos gerais do pedido</p>
+    <div class="grid-2">
+      <div class="field">
+        <label>Etiqueta<span class="hint">por unidade</span></label>
+        <input type="text" inputmode="decimal" class="money" id="etiqueta" value="0">
+      </div>
+      <div class="field">
+        <label>Outros custos<span class="hint">total do pedido</span></label>
+        <input type="text" inputmode="decimal" class="money" id="outros" value="0">
+      </div>
+    </div>
+
+    <hr class="divider">
+    <div class="var-header">
+      <p class="section-label">Variações (tamanhos / modelos)</p>
+      <button type="button" class="btn-add" id="addVar">+ Adicionar variação</button>
+    </div>
+    <div id="variacoes"></div>
+
+    <hr class="divider">
+    <p class="section-label">Resumo do pedido</p>
+    <div class="summary-grid">
+      <div class="stat">
+        <span class="k">Quantidade total</span>
+        <span class="v" id="qtyTotal">0</span>
+      </div>
+      <div class="stat">
+        <span class="k">Custo médio por unidade</span>
+        <span class="v" id="custoUnit">R$ 0,00</span>
+      </div>
+      <div class="stat">
+        <span class="k">Custo geral do pedido</span>
+        <span class="v" id="custoGeral">R$ 0,00</span>
+      </div>
+      <div class="stat highlight">
+        <span class="k">Margem real sobre a venda</span>
+        <span class="v" id="margemReal">0,0%</span>
+      </div>
+      <div class="stat highlight">
+        <span class="k">Markup sobre o custo</span>
+        <span class="v" id="markup">0,0%</span>
+      </div>
+      <div class="stat">
+        <span class="k">Lucro total do pedido</span>
+        <span class="v" id="lucroTotal">R$ 0,00</span>
+      </div>
+      <div class="stat total">
+        <span class="k">Total do pedido</span>
+        <span class="v" id="totalPedido">R$ 0,00</span>
+      </div>
+    </div>
+
+    <hr class="divider">
+    <p class="section-label"><button type="button" class="cli-toggle" id="cliToggle" aria-expanded="false">Dados do orçamento para o cliente<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></p>
+    <p class="note" style="margin:-6px 0 14px;">Essas informações aparecem na imagem do cliente e também no resumo interno — não afetam os cálculos.</p>
+    <div class="grid-2">
+      <div class="field">
+        <label>Nome do cliente</label>
+        <input type="text" id="respNome" placeholder="Nome do cliente">
+      </div>
+      <div class="field">
+        <label>Contato do cliente</label>
+        <input type="text" id="respContato" placeholder="WhatsApp ou telefone">
+      </div>
+    </div>
+    <div class="field">
+      <label>Data</label>
+      <input type="date" id="respData">
+    </div>
+    <div class="field">
+      <label>Descrição<span class="hint">material, composição, gola, acabamento — mensagem padrão, edite ou apague</span></label>
+      <textarea id="respDescricao">Malha 100% algodão 30.1.</textarea>
+    </div>
+    <div class="field">
+      <label>Forma de pagamento</label>
+      <textarea id="respPagamento">50% para confirmar o pedido e 50% na entrega, ou no cartão de crédito em até 12x com taxas.</textarea>
+    </div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Prazo de entrega</label>
+        <input type="text" id="respPrazo" placeholder="Ex.: 15 dias úteis">
+      </div>
+      <div class="field">
+        <label>Validade do orçamento</label>
+        <input type="text" id="respValidade" value="5 dias">
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom" style="justify-content:flex-end;">
+    <div class="footer">
+      <div><span class="ico"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.31 2 11.62c0 1.85.5 3.58 1.44 5.09L2 22l5.5-1.4a10.6 10.6 0 0 0 4.5 1.02c5.52 0 10-4.31 10-9.62S17.52 2 12 2zm0 17.5c-1.42 0-2.8-.36-4.02-1.04l-.29-.16-3.27.83.87-3.16-.19-.32A7.9 7.9 0 0 1 4 11.62C4 7.4 7.58 4 12 4s8 3.4 8 7.62-3.58 7.88-8 7.88zm4.4-5.9c-.24-.12-1.43-.7-1.65-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.18 1.1.16 1.52.1.46-.07 1.43-.58 1.63-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg></span> WhatsApp (24) 99313-5370</div>
+      <div><span class="ico"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.31 2 11.62c0 1.85.5 3.58 1.44 5.09L2 22l5.5-1.4a10.6 10.6 0 0 0 4.5 1.02c5.52 0 10-4.31 10-9.62S17.52 2 12 2zm0 17.5c-1.42 0-2.8-.36-4.02-1.04l-.29-.16-3.27.83.87-3.16-.19-.32A7.9 7.9 0 0 1 4 11.62C4 7.4 7.58 4 12 4s8 3.4 8 7.62-3.58 7.88-8 7.88zm4.4-5.9c-.24-.12-1.43-.7-1.65-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.18 1.1.16 1.52.1.46-.07 1.43-.58 1.63-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg></span> WhatsApp (21) 99866-3653</div>
+      <div><span class="ico"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg></span> Instagram @arcanostyle</div>
+    </div>
+  </div>
+
+  <div class="bottom" style="margin-top:8px;justify-content:flex-end;gap:10px;">
+    <button type="button" class="btn-download" id="salvarBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg><span>Salvar</span></button>
+    <button type="button" class="btn-download" id="criarPedidoBtn" hidden>Criar pedido</button>
+    <button type="button" class="btn-download" id="downloadClienteBtn">⬇ Baixar orçamento / cliente</button>
+    <button type="button" class="btn-download" id="downloadBtn">⬇ Baixar orçamento interno</button>
+  </div>
+
+</div>
+
+<!-- Cartão fora da tela, usado só como fonte pra rasterizar a imagem 9:16 do download -->
+<div id="exportCard" aria-hidden="true">
+  <div class="ex-head">
+    <img class="ex-logo" alt="Arcano" src="data:image/png;base64,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">
+    <div class="ex-tagline">Estilo transcendente.<br>A linguagem do Sagrado.</div>
+  </div>
+  <div class="ex-title-row">
+    <h2 class="ex-title" id="exTitle">Orçamento — resumo interno</h2>
+    <span class="ex-date" id="exDate"></span>
+  </div>
+  <div class="ex-card">
+    <div class="ex-group">
+      <p class="ex-section-label">Custos gerais do pedido</p>
+      <div class="ex-chips">
+        <div class="ex-chip">
+          <span class="k">Etiqueta (por unidade)</span>
+          <span class="v" id="exEtiqueta">R$ 0,00</span>
+        </div>
+        <div class="ex-chip">
+          <span class="k">Outros custos (total do pedido)</span>
+          <span class="v" id="exOutros">R$ 0,00</span>
+        </div>
+      </div>
+    </div>
+    <hr class="ex-divider">
+    <div class="ex-group">
+      <p class="ex-section-label">Variações</p>
+      <div class="ex-rows" id="exRows"></div>
+    </div>
+    <hr class="ex-divider">
+    <div class="ex-group">
+      <p class="ex-section-label">Resumo do pedido</p>
+      <div class="ex-stats">
+        <div class="ex-stat">
+          <span class="k">Quantidade total</span>
+          <span class="v" id="exQtyTotal">0</span>
+        </div>
+        <div class="ex-stat">
+          <span class="k">Custo médio/unidade</span>
+          <span class="v" id="exCustoUnit">R$ 0,00</span>
+        </div>
+        <div class="ex-stat">
+          <span class="k">Custo geral do pedido</span>
+          <span class="v" id="exCustoGeral">R$ 0,00</span>
+        </div>
+        <div class="ex-stat hl">
+          <span class="k">Margem real s/ venda</span>
+          <span class="v" id="exMargemReal">0,0%</span>
+        </div>
+        <div class="ex-stat hl">
+          <span class="k">Markup s/ custo</span>
+          <span class="v" id="exMarkup">0,0%</span>
+        </div>
+        <div class="ex-stat hl">
+          <span class="k">Lucro total</span>
+          <span class="v" id="exLucroTotal">R$ 0,00</span>
+        </div>
+      </div>
+    </div>
+    <hr class="ex-divider">
+    <div class="ex-total-box">
+      <span class="lbl">Total do pedido</span>
+      <span class="val" id="exTotal">R$ 0,00</span>
+    </div>
+    <hr class="ex-divider">
+    <div class="ex-group ex-cliente-info">
+      <p class="ex-section-label">Dados do orçamento para o cliente</p>
+      <div class="ex-cliente-info-grid">
+        <div class="ex-cliente-info-col">
+          <p class="kv"><span class="lbl">Cliente:</span> <span class="val" id="exClienteNome">—</span></p>
+          <p class="kv"><span class="lbl">Contato:</span> <span class="val" id="exClienteContato">—</span></p>
+          <p class="kv"><span class="lbl">Forma de pagamento:</span> <span class="val" id="exPagamento">—</span></p>
+        </div>
+        <div class="ex-cliente-info-col">
+          <p class="kv"><span class="lbl">Descrição:</span> <span class="val" id="exDescricao">—</span></p>
+          <p class="kv"><span class="lbl">Prazo de entrega:</span> <span class="val" id="exPrazo">—</span></p>
+          <p class="kv"><span class="lbl">Validade do orçamento:</span> <span class="val" id="exValidade">—</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ex-foot">
+    <div class="ex-contact">
+      <div><span class="ico"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.31 2 11.62c0 1.85.5 3.58 1.44 5.09L2 22l5.5-1.4a10.6 10.6 0 0 0 4.5 1.02c5.52 0 10-4.31 10-9.62S17.52 2 12 2zm0 17.5c-1.42 0-2.8-.36-4.02-1.04l-.29-.16-3.27.83.87-3.16-.19-.32A7.9 7.9 0 0 1 4 11.62C4 7.4 7.58 4 12 4s8 3.4 8 7.62-3.58 7.88-8 7.88zm4.4-5.9c-.24-.12-1.43-.7-1.65-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.18 1.1.16 1.52.1.46-.07 1.43-.58 1.63-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg></span> WhatsApp (24) 99313-5370</div>
+      <div><span class="ico"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.31 2 11.62c0 1.85.5 3.58 1.44 5.09L2 22l5.5-1.4a10.6 10.6 0 0 0 4.5 1.02c5.52 0 10-4.31 10-9.62S17.52 2 12 2zm0 17.5c-1.42 0-2.8-.36-4.02-1.04l-.29-.16-3.27.83.87-3.16-.19-.32A7.9 7.9 0 0 1 4 11.62C4 7.4 7.58 4 12 4s8 3.4 8 7.62-3.58 7.88-8 7.88zm4.4-5.9c-.24-.12-1.43-.7-1.65-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.18 1.1.16 1.52.1.46-.07 1.43-.58 1.63-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg></span> WhatsApp (21) 99866-3653</div>
+      <div><span class="ico"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg></span> Instagram @arcanostyle</div>
+    </div>
+  </div>
+</div>
+
+<!-- Aviso flutuante (toast) — substitui alert()/confirm() nativos -->
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- Modal de apoio: aparece só se o download automático não estiver disponível nesta visualização -->
+<div class="dl-modal" id="dlModal" hidden>
+  <div class="dl-modal-box">
+    <button type="button" class="dl-modal-close" id="dlModalClose">Fechar</button>
+    <img id="dlModalImg" alt="Orçamento gerado">
+    <p>O download automático não está disponível aqui. Toque e segure (ou clique com o botão direito) na imagem acima para salvá-la.</p>
+  </div>
+</div>
+
+<!-- Histórico de orçamentos salvos — persiste entre sessões via a capability "db" do artefato. -->
+<div class="dl-modal" id="historicoModal" hidden>
+  <div class="form-modal-box historico-box">
+    <h2>Histórico de orçamentos</h2>
+    <p class="modal-note">Toque no nome pra abrir e editar o orçamento. Os ícones baixam a imagem do cliente ou a interna.</p>
+    <div class="historico-list" id="historicoList">
+      <p class="historico-loading">Carregando...</p>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" id="historicoClose">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cartão fora da tela pro orçamento do CLIENTE — sem custo/margem, fontes maiores que o interno -->
+<div id="exportCardCliente" aria-hidden="true">
+  <div class="exc-head">
+    <img class="exc-logo" alt="Arcano" src="data:image/png;base64,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">
+    <div class="exc-tagline">Estilo transcendente.<br>A linguagem do Sagrado.</div>
+  </div>
+  <div class="exc-title-row">
+    <h2 class="exc-title" id="excTitle">Proposta de orçamento</h2>
+    <span class="exc-date" id="excDate"></span>
+  </div>
+  <div class="exc-meta">
+    <div class="chip">
+      <span class="k">Cliente</span>
+      <span class="v" id="excResp">—</span>
+    </div>
+    <div class="chip">
+      <span class="k">Contato</span>
+      <span class="v" id="excContato">—</span>
+    </div>
+  </div>
+  <div class="exc-card">
+   <div class="exc-top-block">
+    <div class="exc-group">
+      <p class="exc-section-label">Descrição</p>
+      <p class="exc-descricao" id="excDescricao">—</p>
+    </div>
+    <hr class="exc-divider">
+    <div class="exc-group">
+      <p class="exc-section-label">Itens do pedido</p>
+      <div class="exc-rows" id="excRows"></div>
+    </div>
+   </div>
+   <div class="exc-bottom-block">
+    <div class="exc-total-row">
+      <div class="exc-qty">
+        <span class="k">Quantidade total</span>
+        <span class="v" id="excQtyTotal">0</span>
+      </div>
+      <div class="exc-main">
+        <span class="k">Total do pedido</span>
+        <span class="v" id="excTotal">R$ 0,00</span>
+      </div>
+    </div>
+    <hr class="exc-divider-soft">
+    <div class="exc-group exc-terms-group">
+      <p class="kv term"><span class="lbl">Forma de pagamento:</span> <span class="val" id="excPagamento">—</span></p>
+      <hr class="exc-divider-soft">
+      <p class="kv term"><span class="lbl">Prazo de entrega:</span> <span class="val" id="excPrazo">—</span></p>
+      <hr class="exc-divider-soft">
+      <p class="kv term"><span class="lbl">Validade do orçamento:</span> <span class="val" id="excValidade">—</span></p>
+    </div>
+   </div>
+  </div>
+  <div class="exc-foot">
+    <div class="exc-contact">
+      <div><span class="ico"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.31 2 11.62c0 1.85.5 3.58 1.44 5.09L2 22l5.5-1.4a10.6 10.6 0 0 0 4.5 1.02c5.52 0 10-4.31 10-9.62S17.52 2 12 2zm0 17.5c-1.42 0-2.8-.36-4.02-1.04l-.29-.16-3.27.83.87-3.16-.19-.32A7.9 7.9 0 0 1 4 11.62C4 7.4 7.58 4 12 4s8 3.4 8 7.62-3.58 7.88-8 7.88zm4.4-5.9c-.24-.12-1.43-.7-1.65-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.18 1.1.16 1.52.1.46-.07 1.43-.58 1.63-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg></span> WhatsApp (24) 99313-5370</div>
+      <div><span class="ico"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.31 2 11.62c0 1.85.5 3.58 1.44 5.09L2 22l5.5-1.4a10.6 10.6 0 0 0 4.5 1.02c5.52 0 10-4.31 10-9.62S17.52 2 12 2zm0 17.5c-1.42 0-2.8-.36-4.02-1.04l-.29-.16-3.27.83.87-3.16-.19-.32A7.9 7.9 0 0 1 4 11.62C4 7.4 7.58 4 12 4s8 3.4 8 7.62-3.58 7.88-8 7.88zm4.4-5.9c-.24-.12-1.43-.7-1.65-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.18 1.1.16 1.52.1.46-.07 1.43-.58 1.63-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg></span> WhatsApp (21) 99866-3653</div>
+      <div><span class="ico"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg></span> Instagram @arcanostyle</div>
+    </div>
+  </div>
+</div>
+
+<script>
+function money(v){
+  if(!isFinite(v)) v = 0;
+  return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+}
+function pct(v){
+  if(!isFinite(v)) v = 0;
+  return (v*100).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}) + '%';
+}
+// Lê um campo de dinheiro (que pode estar formatado "R$ 9,00", ou só "9", "9,50" etc
+// enquanto o usuário ainda está digitando) e devolve o número.
+function parseMoney(str){
+  if(str == null) return 0;
+  let s = String(str).replace(/[^\d,.-]/g,'').trim();
+  if(s === '' || s === '-') return 0;
+  if(s.includes(',') && s.includes('.')){
+    s = s.replace(/\./g,'').replace(',', '.');
+  } else if(s.includes(',')){
+    s = s.replace(',', '.');
+  }
+  const v = parseFloat(s);
+  return isFinite(v) ? v : 0;
+}
+// Toda vez que o campo perde o foco, reformata como "R$ 0,00".
+function formatMoneyEl(input){
+  input.value = money(parseMoney(input.value));
+}
+const el = id => document.getElementById(id);
+
+// Aviso flutuante — usar no lugar de alert()/confirm(), que ficam sem efeito
+// dentro do iframe isolado onde o artefato publicado roda.
+let _toastTimeout = null;
+function showToast(msg, isError){
+  const t = el('toast');
+  if(!t) return;
+  t.textContent = msg;
+  t.classList.toggle('error', !!isError);
+  t.classList.add('show');
+  clearTimeout(_toastTimeout);
+  _toastTimeout = setTimeout(() => { t.classList.remove('show'); }, 3200);
+}
+const variacoesEl = el('variacoes');
+let rowCount = 0;
+
+// Ao clicar/focar em qualquer campo, seleciona o conteúdo inteiro, pra digitar
+// por cima sem precisar apagar manualmente o que já estava lá.
+document.addEventListener('focus', e => {
+  if(e.target.tagName === 'INPUT') e.target.select();
+}, true);
+
+function addRow(data){
+  data = data || {};
+  rowCount++;
+  const row = document.createElement('div');
+  row.className = 'var-row';
+  row.innerHTML = `
+    <div class="var-row-top">
+      <input type="text" class="v-nome" value="${data.nome || ''}" placeholder="Nome da variação (ex: P ao GG tradicional)">
+      <button type="button" class="btn-remove" title="Remover variação">×</button>
+    </div>
+    <div class="var-grid">
+      <div class="field"><label>Quantidade</label><input type="number" class="v-qtd" value="${data.qtd ?? 0}" min="0" step="1"></div>
+      <div class="field"><label>Custo camiseta</label><input type="text" inputmode="decimal" class="money v-camisa" value="${data.camisa ?? 0}"></div>
+      <div class="field"><label>Custo estampa</label><input type="text" inputmode="decimal" class="money v-estampa" value="${data.estampa ?? 0}"></div>
+      <div class="field"><label>Preço de venda</label><input type="text" inputmode="decimal" class="money v-preco" value="${data.preco ?? 0}"></div>
+    </div>
+    <div class="var-sub">
+      <span>Custo total: <b class="sub-custo">R$ 0,00</b></span>
+      <span>Subtotal venda: <b class="sub-venda">R$ 0,00</b></span>
+      <span>Lucro: <b class="sub-lucro">R$ 0,00</b></span>
+    </div>
+  `;
+  row.querySelectorAll('input').forEach(i => i.addEventListener('input', calc));
+  row.querySelectorAll('input.money').forEach(i => {
+    formatMoneyEl(i);
+    i.addEventListener('blur', () => { formatMoneyEl(i); calc(); });
+  });
+  row.querySelector('.btn-remove').addEventListener('click', () => { row.remove(); calc(); });
+  variacoesEl.appendChild(row);
+}
+
+el('addVar').addEventListener('click', () => { addRow(); calc(); });
+
+// Núcleo puro do cálculo (sem tocar no DOM) — usado tanto pelo calc() (tela)
+// quanto pra gerar as imagens a partir de um orçamento salvo no histórico,
+// que pode ter valores diferentes dos que estão preenchidos na tela agora.
+function computeSummary(etiqueta, outros, variacoes){
+  let qtyTotal = 0;
+  let custoGeral = outros;
+  let receitaTotal = 0;
+
+  const rows = variacoes.map(v => {
+    const qtd = v.qtd || 0;
+    const camisa = v.camisa || 0;
+    const estampa = v.estampa || 0;
+    const preco = v.preco || 0;
+    const custoRow = qtd * (camisa + estampa + etiqueta);
+    const receitaRow = qtd * preco;
+    qtyTotal += qtd;
+    custoGeral += custoRow;
+    receitaTotal += receitaRow;
+    return { ...v, qtd, camisa, estampa, preco, custoRow, receitaRow, lucroRow: receitaRow - custoRow };
+  });
+
+  const custoUnit = qtyTotal > 0 ? custoGeral / qtyTotal : 0;
+  const lucroTotal = receitaTotal - custoGeral;
+  const margemReal = receitaTotal > 0 ? lucroTotal / receitaTotal : 0;
+  const markup = custoGeral > 0 ? lucroTotal / custoGeral : 0;
+
+  return { rows, qtyTotal, custoGeral, custoUnit, receitaTotal, lucroTotal, margemReal, markup };
+}
+
+function calc(){
+  const etiqueta = parseMoney(el('etiqueta').value);
+  const outros = parseMoney(el('outros').value);
+
+  const rowEls = Array.from(variacoesEl.querySelectorAll('.var-row'));
+  const variacoes = rowEls.map(row => ({
+    qtd: parseFloat(row.querySelector('.v-qtd').value) || 0,
+    camisa: parseMoney(row.querySelector('.v-camisa').value),
+    estampa: parseMoney(row.querySelector('.v-estampa').value),
+    preco: parseMoney(row.querySelector('.v-preco').value),
+  }));
+
+  const s = computeSummary(etiqueta, outros, variacoes);
+
+  rowEls.forEach((row, i) => {
+    row.querySelector('.sub-custo').textContent = money(s.rows[i].custoRow);
+    row.querySelector('.sub-venda').textContent = money(s.rows[i].receitaRow);
+    row.querySelector('.sub-lucro').textContent = money(s.rows[i].lucroRow);
+  });
+
+  el('qtyTotal').textContent = s.qtyTotal.toLocaleString('pt-BR');
+  el('custoGeral').textContent = money(s.custoGeral);
+  el('custoUnit').textContent = money(s.custoUnit);
+  el('totalPedido').textContent = money(s.receitaTotal);
+  el('lucroTotal').textContent = money(s.lucroTotal);
+  el('margemReal').textContent = pct(s.margemReal);
+  el('markup').textContent = pct(s.markup);
+}
+
+// Monta um "snapshot" de tudo que descreve o orçamento atual da tela — usado
+// tanto pra gerar as imagens quanto pra salvar no histórico (mesmo formato).
+function buildExportDataFromForm(){
+  const variacoes = Array.from(variacoesEl.querySelectorAll('.var-row')).map(row => ({
+    nome: row.querySelector('.v-nome').value.trim(),
+    qtd: parseFloat(row.querySelector('.v-qtd').value) || 0,
+    camisa: parseMoney(row.querySelector('.v-camisa').value),
+    estampa: parseMoney(row.querySelector('.v-estampa').value),
+    preco: parseMoney(row.querySelector('.v-preco').value),
+  }));
+  return {
+    projeto: el('projeto').value.trim(),
+    etiqueta: parseMoney(el('etiqueta').value),
+    outros: parseMoney(el('outros').value),
+    variacoes,
+    clienteNome: el('respNome').value.trim(),
+    clienteContato: el('respContato').value.trim(),
+    clienteDataIso: el('respData').value,
+    descricao: el('respDescricao').value.trim(),
+    pagamento: el('respPagamento').value.trim(),
+    prazo: el('respPrazo').value.trim(),
+    validade: el('respValidade').value.trim(),
+  };
+}
+
+[el('etiqueta'), el('outros')].forEach(i => {
+  formatMoneyEl(i);
+  i.addEventListener('input', calc);
+  i.addEventListener('blur', () => { formatMoneyEl(i); calc(); });
+});
+
+// Uma única variação por padrão — edite ou apague conforme o pedido real,
+// e use "+ Adicionar variação" quando o pedido tiver mais de um preço.
+addRow({nome:'P ao GG tradicional', qtd:20, camisa:12.00, estampa:5.00, preco:35.00});
+calc();
+
+// Data do orçamento pro cliente — pré-preenchida com hoje (antes só acontecia
+// ao abrir o modal separado; agora os campos ficam sempre na tela principal).
+if(!el('respData').value){
+  el('respData').value = new Date().toISOString().slice(0, 10);
+}
+
+// ---- Baixar orçamento: gera um PNG 9:16 (1080x1920) com o resumo do pedido ----
+
+// Cartão de exportação "completo" — pro sócio, não pro cliente: mostra tudo
+// que a calculadora calcula (custo de cada peça, margem, markup etc.), igual
+// à planilha. Não confundir com um orçamento pra enviar ao cliente final.
+// Se "data" for passado (um registro vindo do histórico), monta a imagem a
+// partir DELE, sem tocar nos campos da tela. Sem "data", lê a tela como sempre.
+function populateExportCard(data){
+  if(!data){
+    calc(); // garante que os spans da tela (qtyTotal, custoGeral etc.) estão atualizados antes de copiar pro cartão
+    data = buildExportDataFromForm();
+  }
+  const { etiqueta, outros, variacoes, projeto, clienteNome, clienteContato, descricao, pagamento, prazo, validade } = data;
+  const s = computeSummary(etiqueta, outros, variacoes);
+  const displayRows = s.rows.filter(r => r.qtd > 0);
+
+  const rowsEl = el('exRows');
+  rowsEl.innerHTML = '';
+
+  displayRows.forEach(r => {
+    const nome = (r.nome || '').trim() || 'Variação';
+    const row = document.createElement('div');
+    row.className = 'ex-row';
+    row.innerHTML = `
+      <div class="ex-row-top">
+        <span class="ex-nome">${nome}</span>
+        <span class="ex-lucro"><span class="lbl">Lucro</span>${money(r.lucroRow)}</span>
+      </div>
+      <div class="ex-row-grid">
+        <div class="cell"><span class="k">Quantidade</span><span class="v">${r.qtd.toLocaleString('pt-BR')}</span></div>
+        <div class="cell"><span class="k">Custo camiseta</span><span class="v">${money(r.camisa)}</span></div>
+        <div class="cell"><span class="k">Custo estampa</span><span class="v">${money(r.estampa)}</span></div>
+        <div class="cell"><span class="k">Preço de venda</span><span class="v">${money(r.preco)}</span></div>
+        <div class="cell"><span class="k">Custo total</span><span class="v">${money(r.custoRow)}</span></div>
+        <div class="cell hl"><span class="k">Subtotal venda</span><span class="v">${money(r.receitaRow)}</span></div>
+      </div>
+    `;
+    rowsEl.appendChild(row);
+  });
+
+  if(!displayRows.length){
+    const row = document.createElement('div');
+    row.className = 'ex-row';
+    row.innerHTML = `<div class="ex-row-top"><span class="ex-nome">Nenhuma variação com quantidade</span></div>`;
+    rowsEl.appendChild(row);
+  }
+
+  // Densidade: encolhe as linhas quando há muitas variações, pra caber no canvas fixo 1080x1920.
+  const exportCardEl = el('exportCard');
+  exportCardEl.classList.remove('ex-density-2', 'ex-density-3');
+  const rowCount = displayRows.length || 1;
+  if(rowCount >= 5) exportCardEl.classList.add('ex-density-3');
+  else if(rowCount >= 3) exportCardEl.classList.add('ex-density-2');
+
+  // Campos gerais e resumo do pedido
+  el('exEtiqueta').textContent = money(etiqueta);
+  el('exOutros').textContent = money(outros);
+  el('exQtyTotal').textContent = s.qtyTotal.toLocaleString('pt-BR');
+  el('exCustoUnit').textContent = money(s.custoUnit);
+  el('exCustoGeral').textContent = money(s.custoGeral);
+  el('exMargemReal').textContent = pct(s.margemReal);
+  el('exMarkup').textContent = pct(s.markup);
+  el('exLucroTotal').textContent = money(s.lucroTotal);
+  el('exTotal').textContent = money(s.receitaTotal);
+
+  // Orçamento salvo no histórico: mostra a data em que foi salvo (não a de hoje).
+  el('exDate').textContent = data.dataSalva || new Date().toLocaleDateString('pt-BR');
+
+  el('exTitle').textContent = projeto ? `Orçamento / ${projeto}` : 'Orçamento — resumo interno';
+
+  // Dados do orçamento pro cliente, repetidos aqui a pedido do usuário.
+  el('exClienteNome').textContent = clienteNome || '—';
+  el('exClienteContato').textContent = clienteContato || '—';
+  el('exDescricao').textContent = descricao || '—';
+  el('exPagamento').textContent = pagamento || '—';
+  el('exPrazo').textContent = prazo || '—';
+  el('exValidade').textContent = validade || '—';
+}
+
+// ---- Orçamento CLIENTE: sem custo/margem, com dados extras preenchidos no formulário ----
+
+function formatDateBR(isoDate){
+  if(!isoDate) return '';
+  const parts = isoDate.split('-');
+  if(parts.length !== 3) return isoDate;
+  const [y, m, d] = parts;
+  return `${d}/${m}/${y}`;
+}
+
+// Mesma ideia do populateExportCard: com "data" (registro do histórico), monta
+// a partir dele; sem "data", lê o formulário (comportamento de sempre).
+function populateExportCardCliente(data){
+  if(!data){
+    calc(); // garante qtyTotal/totalPedido atualizados antes de copiar pro cartão
+    data = buildExportDataFromForm();
+  }
+  const { etiqueta, outros, variacoes, projeto, clienteNome, clienteContato, clienteDataIso, descricao, pagamento, prazo, validade } = data;
+  const s = computeSummary(etiqueta, outros, variacoes);
+  const responsavel = (clienteNome || '').trim() || 'Cliente';
+
+  el('excTitle').textContent = projeto ? `Orçamento / ${projeto}` : 'Proposta de orçamento';
+  el('excDate').textContent = clienteDataIso ? formatDateBR(clienteDataIso) : (data.dataSalva || new Date().toLocaleDateString('pt-BR'));
+  el('excResp').textContent = responsavel;
+  el('excContato').textContent = clienteContato || '—';
+  el('excDescricao').textContent = descricao || '—';
+  el('excPagamento').textContent = pagamento || '—';
+  el('excPrazo').textContent = prazo || '—';
+  el('excValidade').textContent = validade || '—';
+
+  // Itens do pedido: bloco por variação (nome + subtotal em destaque, e
+  // "qtd un. × preço" como detalhe) — layout restaurado a pedido do usuário.
+  const rowsEl = el('excRows');
+  rowsEl.innerHTML = '';
+  const displayRows = s.rows.filter(r => r.qtd > 0);
+
+  displayRows.forEach(r => {
+    const nome = (r.nome || '').trim() || 'Variação';
+    const row = document.createElement('div');
+    row.className = 'exc-row';
+    row.innerHTML = `
+      <div class="exc-row-top">
+        <span class="exc-nome">${nome}</span>
+        <span class="exc-subtotal">${money(r.receitaRow)}</span>
+      </div>
+      <div class="exc-detail">${r.qtd.toLocaleString('pt-BR')} un. × ${money(r.preco)}</div>
+    `;
+    rowsEl.appendChild(row);
+  });
+
+  if(!displayRows.length){
+    const row = document.createElement('div');
+    row.className = 'exc-row';
+    row.innerHTML = `<div class="exc-row-top"><span class="exc-nome">Nenhuma variação com quantidade</span></div>`;
+    rowsEl.appendChild(row);
+  }
+
+  const cardEl = el('exportCardCliente');
+  cardEl.classList.remove('exc-density-2', 'exc-density-3');
+  const rowCount = displayRows.length || 1;
+  if(rowCount >= 5) cardEl.classList.add('exc-density-3');
+  else if(rowCount >= 3) cardEl.classList.add('exc-density-2');
+
+  el('excQtyTotal').textContent = s.qtyTotal.toLocaleString('pt-BR');
+  el('excTotal').textContent = money(s.receitaTotal);
+}
+
+function openFallbackModal(blob){
+  const url = URL.createObjectURL(blob);
+  el('dlModalImg').src = url;
+  const modal = el('dlModal');
+  modal.hidden = false;
+}
+el('dlModalClose').addEventListener('click', () => {
+  const modal = el('dlModal');
+  modal.hidden = true;
+  const img = el('dlModalImg');
+  if(img.src) URL.revokeObjectURL(img.src);
+  img.removeAttribute('src');
+});
+
+// Rasteriza o cartão indicado (via html2canvas) e tenta baixar como PNG.
+// Reutilizada tanto pelo orçamento interno quanto pelo do cliente.
+async function renderAndSaveCard(cardId, filenamePrefix, btn){
+  // Guarda o HTML inteiro (não só o texto) porque alguns desses botões têm um
+  // ícone SVG dentro — trocar só o texto durante a geração e depois restaurar
+  // o innerHTML original evita perder o ícone depois do primeiro uso.
+  const originalHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.textContent = 'Gerando imagem...';
+  try{
+    // deixa o layout assentar antes de rasterizar
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+    if(typeof html2canvas !== 'function'){
+      throw new Error('html2canvas indisponível');
+    }
+    const canvas = await html2canvas(el(cardId), {
+      scale: 2,
+      backgroundColor: '#ffffff',
+      width: 1080,
+      height: 1920,
+      useCORS: true
+    });
+
+    await new Promise((resolve) => {
+      canvas.toBlob(async (blob) => {
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+        if(!blob){
+          openFallbackModal(blob);
+          resolve();
+          return;
+        }
+        const stamp = new Date().toISOString().slice(0,10);
+        const filename = `${filenamePrefix}-${stamp}.png`;
+
+        let downloads = null;
+        if(typeof claude !== 'undefined' && claude && typeof claude.use === 'function'){
+          try{ downloads = await claude.use('downloads'); } catch(e){ downloads = null; }
+        }
+
+        if(!downloads){
+          openFallbackModal(blob);
+          resolve();
+          return;
+        }
+        try{
+          await downloads.save({ filename, data: blob });
+        }catch(err){
+          if(err && err.code === 'declined'){
+            // usuário cancelou o diálogo de salvar — não faz nada
+          }else{
+            openFallbackModal(blob);
+          }
+        }
+        resolve();
+      }, 'image/png');
+    });
+  }catch(e){
+    btn.disabled = false;
+    btn.innerHTML = originalHTML;
+    showToast('Não foi possível gerar a imagem do orçamento. Tente novamente.', true);
+  }
+}
+
+async function downloadOrcamentoInterno(){
+  populateExportCard();
+  await renderAndSaveCard('exportCard', 'orcamento-arcano-interno', el('downloadBtn'));
+}
+
+async function downloadOrcamentoCliente(){
+  populateExportCardCliente();
+  await renderAndSaveCard('exportCardCliente', 'orcamento-arcano-cliente', el('downloadClienteBtn'));
+}
+
+el('downloadBtn').addEventListener('click', downloadOrcamentoInterno);
+el('downloadClienteBtn').addEventListener('click', downloadOrcamentoCliente);
+
+// ---- Histórico de orçamentos (v18): salva cada orçamento na capability "db"
+// do artefato, pra não se perder se a página recarregar, e permite baixar de
+// novo (interno e/ou cliente) qualquer orçamento salvo, a qualquer momento. ----
+
+async function getDb(){
+  try{
+    if(typeof claude === 'undefined' || !claude || typeof claude.use !== 'function') return null;
+    return await claude.use('db');
+  }catch(e){
+    return null;
+  }
+}
+
+let editId = null;
+function setEditing(id, nome){
+  editId = id;
+  el('editBanner').hidden = !id;
+  el('editNome').textContent = nome || 'orçamento sem nome';
+}
+async function salvarOrcamento(asNew){
+  asNew = asNew === true;
+  calc();
+  const formData = buildExportDataFromForm();
+  if(!formData.variacoes.some(v => v.qtd > 0)){
+    showToast('Adicione ao menos uma variação com quantidade antes de salvar.', true);
+    return;
+  }
+
+  const btn = el('salvarBtn');
+  // Guarda o HTML inteiro (ícone + texto) — trocar só o texto durante o
+  // "Salvando..."/"Salvo!" e restaurar o innerHTML depois evita perder o ícone.
+  const originalHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.textContent = 'Salvando...';
+
+  const db = await getDb();
+  if(!db){
+    btn.disabled = false;
+    btn.innerHTML = originalHTML;
+    showToast('Histórico indisponível: entre no sistema Financeiro Arcano e tente de novo.', true);
+    return;
+  }
+
+  try{
+    const record = {
+      ...formData,
+      savedAt: Date.now(),
+      dataSalva: new Date().toLocaleDateString('pt-BR'),
+    };
+    if(editId && !asNew){
+      await db.collection('orcamentos').doc(editId).set(record);
+    }else{
+      const ref = await db.collection('orcamentos').add(record);
+      if(ref && ref.id) setEditing(ref.id, record.projeto);
+    }
+    btn.textContent = 'Salvo!';
+    el('editNome').textContent = record.projeto || 'orçamento sem nome';
+    setTimeout(() => { btn.disabled = false; btn.innerHTML = originalHTML; }, 1400);
+  }catch(e){
+    btn.disabled = false;
+    btn.innerHTML = originalHTML;
+    if(e && e.code === 'quota_exceeded'){
+      showToast('O histórico de orçamentos está cheio. Exclua orçamentos antigos antes de salvar novos.', true);
+    }else{
+      showToast('Não foi possível salvar o orçamento agora. Tente novamente.', true);
+    }
+  }
+}
+el('salvarBtn').addEventListener('click', () => salvarOrcamento(false));
+el('salvarNovoBtn').addEventListener('click', () => salvarOrcamento(true));
+
+function preencherFormulario(d){
+  d = d || {};
+  el('projeto').value = d.projeto || '';
+  el('etiqueta').value = d.etiqueta || 0; formatMoneyEl(el('etiqueta'));
+  el('outros').value = d.outros || 0; formatMoneyEl(el('outros'));
+  variacoesEl.innerHTML = '';
+  const vs = Array.isArray(d.variacoes) && d.variacoes.length ? d.variacoes : [{ nome:'', qtd:0, camisa:0, estampa:0, preco:0 }];
+  vs.forEach(v => addRow(v));
+  el('respNome').value = d.clienteNome || '';
+  el('respContato').value = d.clienteContato || '';
+  el('respData').value = d.clienteDataIso || new Date().toISOString().slice(0,10);
+  el('respDescricao').value = d.descricao != null ? d.descricao : 'Malha 100% algodão 30.1.';
+  el('respPagamento').value = d.pagamento != null ? d.pagamento : '50% para confirmar o pedido e 50% na entrega, ou no cartão de crédito em até 12x com taxas.';
+  el('respPrazo').value = d.prazo || '';
+  el('respValidade').value = d.validade != null ? d.validade : '5 dias';
+  calc();
+}
+function abrirSalvo(item){
+  preencherFormulario(item.data);
+  setEditing(item.id, (item.data.projeto || '').trim());
+  el('historicoModal').hidden = true;
+  window.scrollTo({ top:0 });
+  showToast('Orçamento aberto. Edite e toque em Salvar.');
+}
+el('novoOrcBtn').addEventListener('click', () => {
+  preencherFormulario({ variacoes:[{ nome:'P ao GG tradicional', qtd:0, camisa:0, estampa:0, preco:0 }] });
+  setEditing(null);
+  window.scrollTo({ top:0 });
+});
+
+// Criar pedido no financeiro a partir deste orçamento (só dentro do sistema)
+if(window.parent !== window){
+  el('criarPedidoBtn').hidden = false;
+  el('criarPedidoBtn').addEventListener('click', () => {
+    calc();
+    const d = buildExportDataFromForm();
+    const sm = computeSummary(d.etiqueta, d.outros, d.variacoes);
+    if(!(sm.qtyTotal > 0)){ showToast('Adicione ao menos uma variação com quantidade antes de criar o pedido.', true); return; }
+    const r2 = v => Math.round(v*100)/100;
+    const camisa = d.variacoes.reduce((a,v)=>a+(v.qtd||0)*(v.camisa||0),0);
+    const estampa = d.variacoes.reduce((a,v)=>a+(v.qtd||0)*((v.estampa||0)+(d.etiqueta||0)),0);
+    const custos = [
+      { cat:'Confecção / malha', valor:r2(camisa) },
+      { cat:'Estampa', valor:r2(estampa) },
+      { cat:'Outros custos de produção', valor:r2(d.outros||0) }
+    ].filter(c => c.valor > 0);
+    window.parent.postMessage({ type:'arcano:novo-pedido', cliente:d.clienteNome, projeto:d.projeto, qtd:sm.qtyTotal,
+      total:r2(sm.receitaTotal), custos, obs:d.descricao }, location.origin);
+  });
+}
+
+let historicoCache = []; // [{id, data}] — cache do último carregamento da lista, reusado pros downloads/exclusão
+
+async function abrirHistorico(){
+  el('historicoModal').hidden = false;
+  const listEl = el('historicoList');
+  listEl.innerHTML = '<p class="historico-loading">Carregando...</p>';
+
+  const db = await getDb();
+  if(!db){
+    listEl.innerHTML = '<p class="historico-empty">Histórico indisponível: entre no sistema Financeiro Arcano e tente de novo.</p>';
+    return;
+  }
+  try{
+    const snap = await db.collection('orcamentos').orderBy('savedAt', 'desc').limit(50).get();
+    historicoCache = snap.docs.map(d => ({ id: d.id, data: d.data() || {} }));
+    renderHistoricoList();
+  }catch(e){
+    listEl.innerHTML = '<p class="historico-empty">Não foi possível carregar o histórico agora. Tente novamente.</p>';
+  }
+}
+
+function renderHistoricoList(){
+  const listEl = el('historicoList');
+  if(!historicoCache.length){
+    listEl.innerHTML = '<p class="historico-empty">Nenhum orçamento salvo ainda. Preencha um orçamento e toque em "Salvar".</p>';
+    return;
+  }
+  listEl.innerHTML = '';
+  historicoCache.forEach(item => {
+    const d = item.data;
+    const nome = (d.projeto || '').trim() || 'Orçamento sem nome';
+    const dataTxt = d.dataSalva || '';
+    const row = document.createElement('div');
+    row.className = 'historico-item';
+    row.innerHTML = `
+      <button type="button" class="historico-info historico-abrir" title="Abrir e editar este orçamento">
+        <div class="historico-nome"></div>
+        <div class="historico-data"></div>
+      </button>
+      <div class="historico-actions">
+        <button type="button" class="historico-icon-btn cliente" title="Baixar orçamento do cliente"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></svg></button>
+        <button type="button" class="historico-icon-btn interno" title="Baixar orçamento interno"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></svg></button>
+        <button type="button" class="historico-icon-btn excluir" title="Excluir do histórico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/></svg></button>
+      </div>
+    `;
+    row.querySelector('.historico-nome').textContent = nome;
+    const vtot = (d.variacoes||[]).reduce((a,v)=>a+(+v.qtd||0)*(+v.preco||0),0);
+    row.querySelector('.historico-data').textContent = [dataTxt, d.clienteNome, vtot ? money(vtot) : ''].filter(Boolean).join(', ');
+    const btnCliente = row.querySelector('.historico-icon-btn.cliente');
+    const btnInterno = row.querySelector('.historico-icon-btn.interno');
+    const btnExcluir = row.querySelector('.historico-icon-btn.excluir');
+    btnCliente.addEventListener('click', () => baixarClienteSalvo(d, btnCliente));
+    btnInterno.addEventListener('click', () => baixarInternoSalvo(d, btnInterno));
+    btnExcluir.addEventListener('click', () => armarExclusao(btnExcluir, item.id));
+    row.querySelector('.historico-abrir').addEventListener('click', () => abrirSalvo(item));
+    if(item.id === editId) row.classList.add('atual');
+    listEl.appendChild(row);
+  });
+}
+
+async function baixarInternoSalvo(data, btn){
+  populateExportCard(data);
+  await renderAndSaveCard('exportCard', 'orcamento-arcano-interno', btn);
+}
+
+async function baixarClienteSalvo(data, btn){
+  populateExportCardCliente(data);
+  await renderAndSaveCard('exportCardCliente', 'orcamento-arcano-cliente', btn);
+}
+
+// Artefatos publicados rodam num iframe isolado onde window.confirm()/alert()
+// costumam ser bloqueados pelo navegador (ficam sem efeito, sem aviso nenhum)
+// — por isso o "confirm()" nativo que tinha aqui antes fazia o botão de
+// excluir simplesmente não fazer nada. Trocado por uma confirmação dentro da
+// própria página: primeiro toque arma o botão (fica vermelho, ícone de check,
+// e dá pra cancelar clicando fora ou esperando); um segundo toque, enquanto
+// armado, exclui de verdade.
+function armarExclusao(btn, id){
+  if(btn.dataset.armado === '1'){
+    executarExclusao(id, btn);
+    return;
+  }
+  // desarma qualquer outro botão de excluir que esteja armado na lista
+  el('historicoList').querySelectorAll('.historico-icon-btn.excluir[data-armado="1"]').forEach(other => {
+    if(other !== btn) desarmarExclusao(other);
+  });
+  btn.dataset.armado = '1';
+  btn.classList.add('confirmando');
+  btn.title = 'Toque de novo pra confirmar a exclusão';
+  clearTimeout(btn._armTimeout);
+  btn._armTimeout = setTimeout(() => desarmarExclusao(btn), 3000);
+}
+
+function desarmarExclusao(btn){
+  clearTimeout(btn._armTimeout);
+  btn.dataset.armado = '';
+  btn.classList.remove('confirmando');
+  btn.title = 'Excluir do histórico';
+}
+
+async function executarExclusao(id, btn){
+  clearTimeout(btn._armTimeout);
+  btn.disabled = true;
+  const db = await getDb();
+  if(!db){
+    btn.disabled = false;
+    desarmarExclusao(btn);
+    return;
+  }
+  try{
+    await db.collection('orcamentos').doc(id).delete();
+    historicoCache = historicoCache.filter(item => item.id !== id);
+    if(id === editId) setEditing(null);
+    renderHistoricoList();
+  }catch(e){
+    btn.disabled = false;
+    desarmarExclusao(btn);
+  }
+}
+
+el('historicoBtn').addEventListener('click', abrirHistorico);
+el('historicoClose').addEventListener('click', () => { el('historicoModal').hidden = true; });
+</script>
+
+
+<script>
+(function(){
+  var t = document.getElementById('cliToggle'); if(!t) return;
+  var label = t.closest('.section-label'), card = label.closest('.card');
+  for(var el = label.nextElementSibling; el; el = el.nextElementSibling) el.classList.add('cli-dado');
+  var mq = window.matchMedia('(max-width:899px)');
+  function set(open){ card.classList.toggle('cli-open', open); t.setAttribute('aria-expanded', String(open)); }
+  t.addEventListener('click', function(){ if(!mq.matches) return; set(!card.classList.contains('cli-open')); });
+  set(false);
+})();
+</script>
+</body></html>
